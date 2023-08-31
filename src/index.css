@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Customize the scrollbar track */
+.hide-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Customize the scrollbar thumb */
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Customize the scrollbar thumb on hover */
+.hide-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+* {
+  scrollbar-width: auto;
+  scrollbar-color: #f87171 #070303;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 15px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #070303;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #f87171;
+  border-radius: 10px;
+  border: 3px solid #000000;
+}
