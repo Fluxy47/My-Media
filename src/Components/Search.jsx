@@ -1,24 +1,12 @@
 import React, { useEffect, useState } from "react";
 
 import MasonryLayout from "./MasonryLayout";
-import { client } from "../client";
-import { feedQuery, searchQuery } from "../Utils/data";
-import Spinner from "./Spinner";
 import { database } from "../firebaseConfig";
 import { AnimatePresence } from "framer-motion";
-import {
-  endAt,
-  equalTo,
-  get,
-  orderByChild,
-  query,
-  ref,
-  startAt,
-} from "firebase/database";
+import { get, ref } from "firebase/database";
 
 const Search = ({ searchTerm }) => {
   const [searchResults, setSearchResults] = useState([]);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,7 +43,6 @@ const Search = ({ searchTerm }) => {
 
   return (
     <AnimatePresence mode="wait">
-      {loading && <Spinner message="Searching pins" />}
       {searchResults?.length !== 0 && <MasonryLayout pins={searchResults} />}
       {searchResults?.length === 0 && searchTerm !== "" && (
         <div className="mt-10 text-center text-xl text-white">

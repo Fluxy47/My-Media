@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineLogout } from "react-icons/ai";
-import { useParams, useNavigate } from "react-router-dom";
-
-import {
-  userCreatedPinsQuery,
-  userQuery,
-  userSavedPinsQuery,
-} from "../Utils/data";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import MasonryLayout from "./MasonryLayout";
 import Spinner from "./Spinner";
@@ -18,7 +12,6 @@ import {
   orderByChild,
   equalTo,
   get,
-  onChildAdded,
   onValue,
 } from "firebase/database";
 import { signOut } from "firebase/auth";
@@ -30,18 +23,12 @@ const notActiveBtnStyles =
 
 const UserProfile = ({ toggleSidebar, sideBarFunction }) => {
   const [user, setUser] = useState();
-  const uid = user?.uid;
-
   const [pins, setPins] = useState([]);
-  console.log("sad", pins);
-  const data = pins?.postedBy?.userId;
-
   const [text, setText] = useState("Created");
+  const [error, setError] = "";
   const [activeBtn, setActiveBtn] = useState("created");
   const navigate = useNavigate();
-  const { userID } = useParams();
 
-  const [error, setError] = useState("");
   const [savedPins, setSavedPins] = useState([]);
 
   useEffect(() => {
@@ -56,11 +43,7 @@ const UserProfile = ({ toggleSidebar, sideBarFunction }) => {
 
           if (userSnapshot.exists()) {
             setUser(userSnapshot.val());
-          } else {
-            console.log("User data not found");
           }
-        } else {
-          console.log("No user is currently logged in");
         }
       } catch (error) {
         console.error("Error:", error);
@@ -169,23 +152,26 @@ const UserProfile = ({ toggleSidebar, sideBarFunction }) => {
           <h1 className="font-bold text-3xl text-center mt-3 text-white">
             {user.displayName}
           </h1>
-          <div className="fixed md:top-0 z-10 right-0 pr-5 ">
+          <div className="fixed md:top-0 z-10 right-0 pr-5 bg-transparent ">
             <button
               className=" bg-white p-2 rounded-full cursor-pointer outline-none shadow-md"
               onClick={handleLogout}
               type="button"
             >
-              <AiOutlineLogout color="red" fontSize={21} />
+              <AiOutlineLogout className="bg-white" color="red" fontSize={21} />
             </button>
           </div>
           <motion.div
-            className="fixed top-0 left-0 p-2 z-1"
+            className="fixed top-0 left-0 p-2 z-1 bg-transparent"
             initial={{ marginLeft: 0 }}
             animate={{ marginLeft: toggleSidebar ? 200 : 0 }}
             transition={{ duration: 0.7 }}
           >
-            <button className="w-[2rem] ml-1  " onClick={sideBarFunction}>
-              <FiMenu color="red" fontSize={30} />
+            <button
+              className="w-[2rem] ml-1 bg-transparent "
+              onClick={sideBarFunction}
+            >
+              <FiMenu className="bg-transparent" color="red" fontSize={30} />
             </button>
           </motion.div>
         </div>
@@ -225,6 +211,11 @@ const UserProfile = ({ toggleSidebar, sideBarFunction }) => {
         {activeBtn === "created" && (
           <div className="px-2">
             <MasonryLayout pins={pins} />
+          </div>
+        )}
+        {error && (
+          <div className="flex justify-center font-bold items-center w-full text-1xl mt-2">
+            {error}
           </div>
         )}
 

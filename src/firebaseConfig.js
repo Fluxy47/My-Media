@@ -27,22 +27,6 @@ const firebase = initializeApp(firebaseConfig);
 const storage = getStorage(firebase);
 const database = getDatabase(firebase);
 const auth = getAuth(firebase);
-setPersistence(auth, browserSessionPersistence)
-  .then(() => {
-    console.log("Persistence set successfully");
-  })
-  .catch((error) => {
-    console.error("Error setting persistence:", error);
-  });
-
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    // User is signed in
-    console.log("User is signed in:", user);
-  } else {
-    // User is signed out
-    console.log("User is signed out");
-  }
-});
+setPersistence(auth, browserSessionPersistence);
 
 export { firebase, database, auth, storage };

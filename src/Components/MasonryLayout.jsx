@@ -13,14 +13,13 @@ const breakpointColumnsObj = {
 };
 
 const MasonryLayout = ({ pins }) => {
-  console.log("ahHH", pins);
   return (
     <Masonry
       className="flex animate-slide-fwd"
       breakpointCols={breakpointColumnsObj}
     >
       {pins.length === 0 && (
-        <div className=" absolute left-1/2 -translate-x-1/2 text-xl text-white">
+        <div className=" absolute left-1/2 -translate-x-1/2 font-bold text-2xl text-white">
           No Pins Found!
         </div>
       )}

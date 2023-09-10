@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import shareVideo from "../assets/assets/share.mp4";
 import logo from "../assets/assets/logo-white1.png";
-
 import { GoogleAuthProvider } from "firebase/auth";
 import { signInWithPopup } from "firebase/auth";
 import { auth, database } from "../firebaseConfig";
@@ -9,13 +8,11 @@ import { get, ref, set } from "firebase/database";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
-  const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const provider = new GoogleAuthProvider();
   const navigate = useNavigate();
 
   const handleClick = async () => {
-    setLoading(true);
     try {
       const result = await signInWithPopup(auth, provider);
       const { displayName, uid, photoURL } = result.user;
@@ -33,10 +30,7 @@ function Login() {
       }
       navigate("/", { replace: true });
     } catch (error) {
-      console.error("Error:", error);
       setError(error.message);
-    } finally {
-      setLoading(false);
     }
   };
 

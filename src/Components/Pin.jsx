@@ -12,13 +12,11 @@ import { deleteObject, ref as storageRef } from "@firebase/storage";
 const Pin = ({ pin }) => {
   const [postHovered, setPostHovered] = useState(false);
   const [savingPost, setSavingPost] = useState(false);
-  const [user, setUser] = useState();
 
   const navigate = useNavigate();
   const currentUser = auth.currentUser;
 
-  const { about, category, destination, imageUrl, pinId, postedBy, title } =
-    pin;
+  const { destination, imageUrl, pinId, postedBy } = pin;
 
   const { userId, userImage, userName } = postedBy;
 
@@ -71,7 +69,6 @@ const Pin = ({ pin }) => {
             // Update the savedPins array in the user's data
             await update(userRef, updates);
           }
-          console.log("Pin saved successfully!");
         } else {
           console.log("User data not found");
         }
@@ -167,7 +164,7 @@ const Pin = ({ pin }) => {
                   rel="noreferrer"
                 >
                   {" "}
-                  <BsFillArrowUpRightCircleFill />
+                  <BsFillArrowUpRightCircleFill className="bg-white" />
                   {destination?.slice(8, 17)}...
                 </a>
               ) : undefined}
@@ -180,7 +177,7 @@ const Pin = ({ pin }) => {
                   }}
                   className="bg-white p-2 rounded-full w-8 h-8 flex items-center justify-center text-dark opacity-75 hover:opacity-100 outline-none"
                 >
-                  <AiTwotoneDelete />
+                  <AiTwotoneDelete className="bg-white" />
                 </button>
               )}
             </div>

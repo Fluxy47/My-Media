@@ -10,17 +10,15 @@ const Home = React.lazy(() => import("./Containers/Home"));
 
 function App() {
   const [user, setUser] = useState(null);
-  console.log("user", user);
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         // User is signed in
         setUser(user);
-        console.log("done");
       } else {
         // User is signed out
         setUser(null);
-        console.log("signed out");
       }
     });
 

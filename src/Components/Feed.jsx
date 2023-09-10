@@ -1,24 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-
-import { client } from "../client";
-import { feedQuery, searchQuery } from "../Utils/data";
 import { database } from "../firebaseConfig";
 import MasonryLayout from "./MasonryLayout";
 import Spinner from "./Spinner";
-import {
-  ref,
-  query,
-  orderByChild,
-  equalTo,
-  get,
-  onValue,
-} from "firebase/database";
+import { ref, get } from "firebase/database";
 import { AnimatePresence } from "framer-motion";
 
 const Feed = () => {
   const [pins, setPins] = useState([]);
-
   const [loading, setLoading] = useState(false);
   const { categoryId } = useParams();
 
@@ -41,8 +30,6 @@ const Feed = () => {
           } else {
             setPins(pinsArray); // Set all data to state if no categoryId
           }
-        } else {
-          console.log("No pins found");
         }
 
         setLoading(false); // Set loading to false after data retrieval

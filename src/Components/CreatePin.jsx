@@ -3,27 +3,17 @@ import { AiOutlineCloudUpload } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { MdDelete } from "react-icons/md";
 import { motion } from "framer-motion";
-import { firebase, database, storage } from "../firebaseConfig";
+import { database, storage } from "../firebaseConfig";
 import {
-  getStorage,
   ref,
   uploadBytes,
   getDownloadURL,
   deleteObject,
   listAll,
 } from "firebase/storage";
-import {
-  getDatabase,
-  ref as dbRef,
-  push,
-  set,
-  query,
-  onValue,
-} from "firebase/database";
-
+import { ref as dbRef, push, set, query, onValue } from "firebase/database";
 import { v4 as uuidv4 } from "uuid";
 import { categories } from "../Utils/data";
-import { client } from "../client";
 import Spinner from "./Spinner";
 
 function CreatePin({ user }) {
@@ -130,8 +120,6 @@ function CreatePin({ user }) {
   }, []);
 
   const savePin = () => {
-    console.log("save function works");
-
     if (title && about && destination && imageUrl && category) {
       // Extract the UUID and filename from the imageUrl
       const filename = imageUrl.split("%2F")[1].split("?")[0];
@@ -194,7 +182,7 @@ function CreatePin({ user }) {
             {wrongImageType && <p>It&apos;s wrong file type.</p>}
             {!imageUrl ? (
               <label>
-                <div className="flex flex-col items-center justify-center h-full">
+                <div className="flex flex-col items-center justify-center h-full ">
                   <div className="flex flex-col justify-center items-center">
                     <p className="font-bold text-2xl">
                       <AiOutlineCloudUpload />
@@ -233,7 +221,7 @@ function CreatePin({ user }) {
           </div>
         </div>
 
-        <div className="flex flex-1 flex-col gap-6 lg:pl-5 mt-5 w-full">
+        <div className="flex flex-1 flex-col gap-6 lg:pl-5 mt-5 w-full bg-[#B93131]">
           {user && (
             <div className="flex gap-2 mt-2 mb-2 items-center bg-transparent rounded-lg relative  ">
               <img
@@ -241,7 +229,9 @@ function CreatePin({ user }) {
                 className="w-[50px] h-[50px] rounded-full"
                 alt="user-profile"
               />
-              <p className="font-bold text-black">{user.displayName}</p>
+              <p className="font-bold bg-[#B93131] text-black">
+                {user.displayName}
+              </p>
             </div>
           )}
           <input
@@ -267,8 +257,8 @@ function CreatePin({ user }) {
             className="outline-none text-base sm:text-lg border-b-2 text-white bg-black border-red-800 p-2"
           />
 
-          <div className="flex flex-col">
-            <div>
+          <div className="flex flex-col bg-[#B93131]">
+            <div className="bg-[#B93131]">
               <p className="mb-2 font-semibold text:lg sm:text-xl bg-[#B93131] text-white">
                 Choose Pin Category
               </p>
@@ -293,7 +283,7 @@ function CreatePin({ user }) {
                 ))}
               </select>
             </div>
-            <div className="flex justify-end items-end mt-5">
+            <div className="flex justify-end items-end mt-5 bg-[#B93131]">
               <button
                 type="button"
                 onClick={savePin}

@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { MdDownloadForOffline } from "react-icons/md";
 import { Link, useParams } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
 import { motion } from "framer-motion";
-import { client, urlFor } from "../client";
 import MasonryLayout from "./MasonryLayout";
-import { pinDetailMorePinQuery, pinDetailQuery } from "../Utils/data";
 import Spinner from "./Spinner";
 import {
   equalTo,
@@ -77,7 +73,6 @@ const PinDetail = ({ user }) => {
         const pinData = pinSnapshot.val();
         setPinDetail(pinData);
       } else {
-        console.log("Pin not found");
         setPinDetail(null);
       }
     } catch (error) {
@@ -118,10 +113,8 @@ const PinDetail = ({ user }) => {
         // Update the pinData in the database
         await set(pinRef, updatedPinData);
 
-        console.log("Comment added successfully!");
         window.location.reload();
       } else {
-        console.log("Pin not found");
         setPinDetail(null);
       }
     } catch (error) {
@@ -237,6 +230,7 @@ const PinDetail = ({ user }) => {
           </h2>
         </>
       )}
+
       {relatedPosts ? (
         <MasonryLayout pins={relatedPosts} />
       ) : (
