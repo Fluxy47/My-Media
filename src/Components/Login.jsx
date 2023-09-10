@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import shareVideo from "../assets/assets/share.mp4";
-import logo from "../assets/assets/logowhite.png";
+import logo from "../assets/assets/logo-white1.png";
 
 import { GoogleAuthProvider } from "firebase/auth";
 import { signInWithPopup } from "firebase/auth";
@@ -55,7 +55,7 @@ function Login() {
 
         <div className="absolute flex flex-col justify-center items-center top-0 right-0 left-0 bottom-0    bg-blackOverlay">
           <div className="p-5">
-            <img src={logo} width="130px" alt="logo" />
+            <img src={logo} width="150px" alt="logo" />
           </div>
 
           <div className="shadow-2xl">
