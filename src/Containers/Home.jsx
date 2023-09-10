@@ -4,11 +4,7 @@ import { HiMenu } from "react-icons/hi";
 import { AiFillCloseCircle } from "react-icons/ai";
 import { Link, Routes, Route } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { database, auth } from "../firebaseConfig";
-import { ref, get } from "firebase/database";
 import logo_4 from "../assets/assets/logo_4.png";
-
-import logo from "../assets/assets/logo.png";
 
 const SideBar = React.lazy(() => import("../Components/SideBar"));
 const UserProfile = React.lazy(() => import("../Components/UserProfile"));
@@ -22,32 +18,6 @@ function Home({ user }) {
   const sideBarFunction = () => {
     setToggleSidebar((prevstate) => !prevstate);
   };
-
-  // useEffect(() => {
-  //   const fetchUserData = async () => {
-  //     try {
-  //       // Get the currently logged-in user
-  //       const currentUser = auth.currentUser;
-
-  //       if (currentUser) {
-  //         const userRef = ref(database, "users/" + currentUser.uid); // Use the UID of the current user
-  //         const userSnapshot = await get(userRef);
-
-  //         if (userSnapshot.exists()) {
-  //           setUser(userSnapshot.val());
-  //         } else {
-  //           console.log("User data not found");
-  //         }
-  //       } else {
-  //         console.log("No user is currently logged in");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error:", error);
-  //     }
-  //   };
-
-  //   fetchUserData();
-  // }, []);
 
   useEffect(() => {
     scrollRef.current.scrollTo(0, 0);
