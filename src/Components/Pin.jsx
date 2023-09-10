@@ -138,18 +138,6 @@ const Pin = ({ pin }) => {
             style={{ height: "100%" }}
           >
             <div className="flex items-center justify-between">
-              <div className="flex gap-2">
-                <a
-                  href={{ imageUrl }}
-                  download
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                  className="bg-white w-9 h-9 p-2 rounded-full flex items-center justify-center text-dark text-xl opacity-75 hover:opacity-100 hover:shadow-md outline-none"
-                >
-                  <MdDownloadForOffline />
-                </a>
-              </div>
               {isPinSaved ? (
                 <button
                   type="button"

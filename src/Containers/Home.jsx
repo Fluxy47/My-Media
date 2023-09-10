@@ -6,6 +6,7 @@ import { Link, Routes, Route } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { database, auth } from "../firebaseConfig";
 import { ref, get } from "firebase/database";
+import logo_4 from "../assets/assets/logo_4.png";
 
 import logo from "../assets/assets/logo.png";
 
@@ -79,7 +80,7 @@ function Home({ user }) {
             onClick={() => setToggleSidebar(true)}
           />
           <Link to="/">
-            <img src={logo} alt="logo" className="w-28" />
+            <img src={logo_4} alt="logo" className="w-28" />
           </Link>
           <Link to={`user-profile/${user?.uid}`}>
             <img

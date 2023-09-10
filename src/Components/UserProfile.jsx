@@ -169,7 +169,7 @@ const UserProfile = ({ toggleSidebar, sideBarFunction }) => {
           <h1 className="font-bold text-3xl text-center mt-3 text-white">
             {user.displayName}
           </h1>
-          <div className="fixed top-0 z-10 right-0 pr-5 ">
+          <div className="fixed md:top-0 z-10 right-0 pr-5 ">
             <button
               className=" bg-white p-2 rounded-full cursor-pointer outline-none shadow-md"
               onClick={handleLogout}

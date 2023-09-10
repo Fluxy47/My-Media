@@ -1,11 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { MdDelete } from "react-icons/md";
 import { motion } from "framer-motion";
 import { firebase, database, storage } from "../firebaseConfig";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getDatabase, ref as dbRef, push, set } from "firebase/database";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+  listAll,
+} from "firebase/storage";
+import {
+  getDatabase,
+  ref as dbRef,
+  push,
+  set,
+  query,
+  onValue,
+} from "firebase/database";
 
 import { v4 as uuidv4 } from "uuid";
 import { categories } from "../Utils/data";
@@ -19,15 +33,15 @@ function CreatePin({ user }) {
   const [loading, setLoading] = useState(false);
   const [fields, setFields] = useState(false);
   const [category, setCategory] = useState(null);
-  const [imageAsset, setImageAsset] = useState(null);
   const [imageUrl, setImageUrl] = useState(null); // Add imageUrl state
+
   const [wrongImageType, setWrongImageType] = useState(false);
 
   const navigate = useNavigate();
-  const db = getDatabase();
 
   const uploadImage = async (e) => {
     const selectedFile = e.target.files[0];
+
     if (selectedFile.type.startsWith("image/")) {
       const storageRef = ref(
         storage,
@@ -38,7 +52,8 @@ function CreatePin({ user }) {
         setLoading(true);
         await uploadBytes(storageRef, selectedFile);
         const url = await getDownloadURL(storageRef);
-        setImageUrl(url); // Update imageUrl state
+        setImageUrl(url);
+
         setLoading(false);
         setWrongImageType(false);
       } catch (error) {
@@ -50,6 +65,69 @@ function CreatePin({ user }) {
       setWrongImageType(true);
     }
   };
+
+  const cleanupOrphanedImages = async () => {
+    // Initialize Firebase references here
+    const storageRef = ref(storage, "images/"); // Adjust the storage path as needed
+
+    // Retrieve pinned image URLs from all pins in your database
+    const pinnedImageNames = [];
+
+    // Query your database to get all pins
+    const pinsQuery = query(dbRef(database, "pins"));
+
+    // Attach a listener to the pins query to retrieve all pins
+    onValue(pinsQuery, (snapshot) => {
+      try {
+        const allPins = snapshot.val();
+
+        // Iterate through all pins and extract 'filename' property
+        for (const key in allPins) {
+          if (allPins.hasOwnProperty(key)) {
+            const filename = allPins[key].filename;
+            if (filename) {
+              pinnedImageNames.push(filename);
+            }
+          }
+        }
+        // List all images in Firebase Cloud Storage
+        listAll(storageRef)
+          .then((result) => {
+            const allImages = result.items;
+
+            // Extract filenames from allImages
+            const imageFilenames = allImages.map((image) => {
+              const parts = image.fullPath.split("/");
+              return parts[parts.length - 1];
+            });
+
+            // Filter out the orphaned images
+            const orphanedImageFilenames = imageFilenames.filter((filename) => {
+              return !pinnedImageNames.includes(filename);
+            });
+
+            // Delete orphaned images
+            const deletePromises = orphanedImageFilenames.map(
+              async (filename) => {
+                const imageRef = ref(storage, `images/${filename}`);
+                await deleteObject(imageRef);
+              }
+            );
+
+            return Promise.all(deletePromises);
+          })
+          .catch((error) => {
+            console.error("Error listing images:", error);
+          });
+      } catch (error) {
+        console.error("Error fetching all pins:", error);
+      }
+    });
+  };
+
+  useEffect(() => {
+    cleanupOrphanedImages();
+  }, []);
 
   const savePin = () => {
     console.log("save function works");
@@ -82,6 +160,7 @@ function CreatePin({ user }) {
 
       set(newPinRef, pinData)
         .then(() => {
+          cleanupOrphanedImages();
           navigate("/");
         })
         .catch((error) => {
@@ -113,7 +192,7 @@ function CreatePin({ user }) {
           <div className=" flex justify-center items-center flex-col border-2 border-dotted border-red-500 p-3 w-full h-420">
             {loading && <Spinner />}
             {wrongImageType && <p>It&apos;s wrong file type.</p>}
-            {!imageAsset ? (
+            {!imageUrl ? (
               <label>
                 <div className="flex flex-col items-center justify-center h-full">
                   <div className="flex flex-col justify-center items-center">
@@ -138,14 +217,14 @@ function CreatePin({ user }) {
             ) : (
               <div className="relative h-full">
                 <img
-                  src={imageAsset?.url}
+                  src={imageUrl}
                   alt="uploaded-pic"
                   className="h-full w-full"
                 />
                 <button
                   type="button"
                   className="absolute bottom-3 right-3 p-3 rounded-full bg-black text-xl cursor-pointer outline-none hover:shadow-md transition-all duration-500 ease-in-out"
-                  onClick={() => setImageAsset(null)}
+                  onClick={() => setImageUrl(null)}
                 >
                   <MdDelete />
                 </button>

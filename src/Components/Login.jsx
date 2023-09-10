@@ -40,47 +40,6 @@ function Login() {
     }
   };
 
-  // const handleLogin = async () => {
-  //   setIsLoading(true);
-  //   try {
-  //     const provider = new GoogleAuthProvider();
-  //     const result = await signInWithPopup(firebaseApp.auth(), provider);
-  //     const { displayName, uid, photoURL } = result.user;
-  //     const doc = {
-  //       _id: uid,
-  //       _type: 'user',
-  //       userName: displayName,
-  //       image: photoURL,
-  //     };
-
-  //     // check if the user already exists in the Sanity backend
-  //     const userExists = await client.getDocument(uid);
-  //     if (userExists) {
-  //       // user already exists, update the user document in the Sanity backend
-  //       await client.patch(uid).set({ image: photoURL });
-  //     } else {
-  //       // user doesn't exist, create a new document in the Sanity backend
-  //       await client.create(doc);
-  //     }
-
-  //     // store the user information in local storage
-  //     localStorage.setItem('user', JSON.stringify(result.user));
-
-  //     // navigate to the home page
-  //     navigate('/', { replace: true });
-  //   } catch (error) {
-  //     console.error('Error:', error);
-  //     setError(error.message);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // const handleLoginFailure = (error) => {
-  //   console.error('Error:', error);
-  //   setError(error.message);
-  //   setIsLoading(false);
-  // };
   return (
     <div className="flex justify-start items-center flex-col h-screen overflow-hidden">
       <div className=" relative w-full h-full">
@@ -100,8 +59,10 @@ function Login() {
           </div>
 
           <div className="shadow-2xl">
-            <button onClick={handleClick}>Sign in</button>
-            {isLoading && <p>Loading...</p>}
+            <button className="button-6" onClick={handleClick}>
+              Sign in
+            </button>
+
             {error && (
               <p className="text-red-700 font-[300px] text-[20px] mt-[20px] ml-5">
                 Error: {error}

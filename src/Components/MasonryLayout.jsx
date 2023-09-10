@@ -20,9 +20,9 @@ const MasonryLayout = ({ pins }) => {
       breakpointCols={breakpointColumnsObj}
     >
       {pins.length === 0 && (
-        <h2 className="text-center font-bold text-2xl break-keep text-white ">
-          Currently There are no Pins
-        </h2>
+        <div className=" absolute left-1/2 -translate-x-1/2 text-xl text-white">
+          No Pins Found!
+        </div>
       )}
       {pins?.map((pin) => (
         <Pin key={pin?.category} pin={pin} className="w-max" />

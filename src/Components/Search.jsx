@@ -6,57 +6,61 @@ import { feedQuery, searchQuery } from "../Utils/data";
 import Spinner from "./Spinner";
 import { database } from "../firebaseConfig";
 import { AnimatePresence } from "framer-motion";
-import { endAt, get, orderByChild, ref, startAt } from "firebase/database";
+import {
+  endAt,
+  equalTo,
+  get,
+  orderByChild,
+  query,
+  ref,
+  startAt,
+} from "firebase/database";
 
 const Search = ({ searchTerm }) => {
-  const [pins, setPins] = useState();
+  const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
+    const fetchData = async () => {
+      try {
+        if (searchTerm) {
+          const pinsRef = ref(database, "pins");
+          const snapshot = await get(pinsRef);
 
-    const pinsRef = ref(database, "pins");
+          if (snapshot.exists()) {
+            const pins = [];
+            snapshot.forEach((childSnapshot) => {
+              const pin = childSnapshot.val();
+              if (
+                pin.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                pin.about.toLowerCase().includes(searchTerm.toLowerCase())
+              ) {
+                pins.push(pin);
+              }
+            });
+            setSearchResults(pins);
+          } else {
+            setSearchResults([]);
+          }
+        } else {
+          setSearchResults([]); // Clear results when the search term is empty
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
-    if (searchTerm !== "") {
-      const query = orderByChild(pinsRef, "titleLower");
-      const startAtQuery = startAt(query, searchTerm.toLowerCase());
-      const endAtQuery = endAt(
-        startAtQuery,
-        searchTerm.toLowerCase() + "\uf8ff"
-      );
-
-      get(endAtQuery)
-        .then((snapshot) => {
-          const searchData = snapshot.val() || {};
-          const searchPins = Object.values(searchData);
-          setPins(searchPins);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error("Error fetching search results:", error);
-          setLoading(false);
-        });
-    } else {
-      get(pinsRef)
-        .then((snapshot) => {
-          const feedData = snapshot.val() || {};
-          const feedPins = Object.values(feedData);
-          setPins(feedPins);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error("Error fetching feed pins:", error);
-          setLoading(false);
-        });
-    }
+    fetchData();
   }, [searchTerm]);
 
   return (
     <AnimatePresence mode="wait">
       {loading && <Spinner message="Searching pins" />}
-      {pins?.length !== 0 && <MasonryLayout pins={pins} />}
-      {pins?.length === 0 && searchTerm !== "" && !loading && (
-        <div className="mt-10 text-center text-xl ">No Pins Found!</div>
+      {searchResults?.length !== 0 && <MasonryLayout pins={searchResults} />}
+      {searchResults?.length === 0 && searchTerm !== "" && (
+        <div className="mt-10 text-center text-xl text-white">
+          No Pins Found!
+        </div>
       )}
     </AnimatePresence>
   );
