@@ -16,7 +16,7 @@ const Pin = ({ pin }) => {
   const navigate = useNavigate();
   const currentUser = auth.currentUser;
 
-  const { destination, imageUrl, pinId, postedBy } = pin;
+  const { imageUrl, pinId, postedBy } = pin;
 
   const { userId, userImage, userName } = postedBy;
 
@@ -155,19 +155,7 @@ const Pin = ({ pin }) => {
                 </button>
               )}
             </div>
-            <div className=" flex justify-between items-center gap-2 w-full">
-              {destination?.slice(8).length > 0 ? (
-                <a
-                  href={destination}
-                  target="_blank"
-                  className="bg-white flex items-center gap-2 text-black font-bold p-2 pl-4 pr-4 rounded-full opacity-70 hover:opacity-100 hover:shadow-md"
-                  rel="noreferrer"
-                >
-                  {" "}
-                  <BsFillArrowUpRightCircleFill className="bg-white" />
-                  {destination?.slice(8, 17)}...
-                </a>
-              ) : undefined}
+            <div className=" flex justify-end items-center gap-2 w-full">
               {currentUser.uid === userId && (
                 <button
                   type="button"
@@ -175,7 +163,7 @@ const Pin = ({ pin }) => {
                     e.stopPropagation();
                     deletePin(pinId);
                   }}
-                  className="bg-white p-2 rounded-full w-8 h-8 flex items-center justify-center text-dark opacity-75 hover:opacity-100 outline-none"
+                  className="bg-white  p-2 rounded-full w-8 h-8 flex items-center justify-center text-dark opacity-75 hover:opacity-100 outline-none"
                 >
                   <AiTwotoneDelete className="bg-white" />
                 </button>

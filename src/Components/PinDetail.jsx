@@ -18,6 +18,7 @@ const PinDetail = ({ user }) => {
   const { pinId } = useParams();
   const [relatedPosts, setRelatedPosts] = useState([]);
   const [pinDetail, setPinDetail] = useState();
+  console.log("comment user", pinDetail);
   const [comment, setComment] = useState("");
   const [addingComment, setAddingComment] = useState(false);
 
@@ -185,11 +186,13 @@ const PinDetail = ({ user }) => {
                   className="flex gap-2 mt-5 items-center bg-black rounded-lg text-white "
                   key={idx}
                 >
-                  <img
-                    src={item.userImage}
-                    className="w-10 h-10 rounded-full cursor-pointer"
-                    alt="user-profile"
-                  />
+                  <Link to={`/user-profile/${item.userId}`}>
+                    <img
+                      src={item.userImage}
+                      className="w-10 h-10 rounded-full cursor-pointer "
+                      alt="user-profile"
+                    />
+                  </Link>
                   <div className="flex flex-col">
                     <p className="font-bold">{item.username}</p>
                     <p>{item.text}</p>

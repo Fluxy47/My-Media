@@ -54,14 +54,8 @@ function Login() {
 
           <div className="shadow-2xl">
             <button className="button-6" onClick={handleClick}>
-              Sign in
+              Sign in / Log in
             </button>
-
-            {error && (
-              <p className="text-red-700 font-[300px] text-[20px] mt-[20px] ml-5">
-                Error: {error}
-              </p>
-            )}
           </div>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { HiMenu } from "react-icons/hi";
 import { AiFillCloseCircle } from "react-icons/ai";
 import { Link, Routes, Route } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import logo_4 from "../assets/assets/logo_4.png";
+import logo from "../assets/assets/logo_pic1.png";
 
 const SideBar = React.lazy(() => import("../Components/SideBar"));
 const UserProfile = React.lazy(() => import("../Components/UserProfile"));
@@ -29,11 +29,11 @@ function Home({ user }) {
         <AnimatePresence mode="wait">
           {toggleSidebar && (
             <motion.div
-              className="fixed w-[200px] bg-white h-screen overflow-y-auto shadow-md z-10 overflow-x-hidden"
-              initial={{ x: "-100%" }} // Initial position of the sidebar on the left
-              animate={{ x: 0 }} // Animation to bring the sidebar into view
-              exit={{ x: "-100%" }} // Animation to hide the sidebar
-              transition={{ duration: 0.75, ease: "easeOut" }} // Animation duration and easing
+              className="fixed w-[200px] bg-white h-screen overflow-y-auto shadow-md z-[21] overflow-x-hidden"
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ duration: 0.75, ease: "easeOut" }}
             >
               <div className="absolute w-full flex justify-end items-center p-2"></div>
               <SideBar closeToggle={setToggleSidebar} user={user && user} />
@@ -41,7 +41,12 @@ function Home({ user }) {
           )}
         </AnimatePresence>
       </div>
-
+      {toggleSidebar && (
+        <div
+          className="fixed md:hidden inset-0 bg-black opacity-50 z-[10]"
+          onClick={() => setToggleSidebar(false)} // Close the sidebar on click
+        />
+      )}
       <div className="flex md:hidden flex-row">
         <div className="p-2 w-full flex flex-row justify-between items-center shadow-md">
           <HiMenu
@@ -50,7 +55,7 @@ function Home({ user }) {
             onClick={() => setToggleSidebar(true)}
           />
           <Link to="/">
-            <img src={logo_4} alt="logo" className="w-28" />
+            <img src={logo} alt="logo" className="w-20" />
           </Link>
           <Link to={`user-profile/${user?.uid}`}>
             <img

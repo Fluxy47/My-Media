@@ -24,7 +24,7 @@ const MasonryLayout = ({ pins }) => {
         </div>
       )}
       {pins?.map((pin) => (
-        <Pin key={pin?.category} pin={pin} className="w-max" />
+        <Pin key={pin?.uid} pin={pin} className="w-max" />
       ))}
     </Masonry>
   );

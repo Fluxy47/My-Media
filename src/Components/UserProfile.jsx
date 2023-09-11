@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineLogout } from "react-icons/ai";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import MasonryLayout from "./MasonryLayout";
 import Spinner from "./Spinner";
@@ -25,25 +25,21 @@ const UserProfile = ({ toggleSidebar, sideBarFunction }) => {
   const [user, setUser] = useState();
   const [pins, setPins] = useState([]);
   const [text, setText] = useState("Created");
-  const [error, setError] = "";
+
   const [activeBtn, setActiveBtn] = useState("created");
   const navigate = useNavigate();
+  const { userId } = useParams();
 
   const [savedPins, setSavedPins] = useState([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // Get the currently logged-in user
-        const currentUser = auth.currentUser;
+        const userRef = ref(database, "users/" + userId); // Use the UID of the current user
+        const userSnapshot = await get(userRef);
 
-        if (currentUser) {
-          const userRef = ref(database, "users/" + currentUser.uid); // Use the UID of the current user
-          const userSnapshot = await get(userRef);
-
-          if (userSnapshot.exists()) {
-            setUser(userSnapshot.val());
-          }
+        if (userSnapshot.exists()) {
+          setUser(userSnapshot.val());
         }
       } catch (error) {
         console.error("Error:", error);
@@ -51,7 +47,7 @@ const UserProfile = ({ toggleSidebar, sideBarFunction }) => {
     };
 
     fetchUserData();
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     if (user && user.savedPins) {
@@ -114,8 +110,6 @@ const UserProfile = ({ toggleSidebar, sideBarFunction }) => {
   }, [user]);
 
   async function handleLogout() {
-    setError("");
-
     try {
       await signOut(auth);
       // Additional asynchronous cleanup or actions can go here
@@ -124,7 +118,7 @@ const UserProfile = ({ toggleSidebar, sideBarFunction }) => {
 
       navigate("/login", { replace: true });
     } catch {
-      setError("Failed to log out");
+      console.log("failed to logout");
     }
   }
 
@@ -211,11 +205,6 @@ const UserProfile = ({ toggleSidebar, sideBarFunction }) => {
         {activeBtn === "created" && (
           <div className="px-2">
             <MasonryLayout pins={pins} />
-          </div>
-        )}
-        {error && (
-          <div className="flex justify-center font-bold items-center w-full text-1xl mt-2">
-            {error}
           </div>
         )}
 

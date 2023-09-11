@@ -2,7 +2,7 @@ import React from "react";
 import { NavLink, Link } from "react-router-dom";
 import { RiHomeFill } from "react-icons/ri";
 import { IoIosArrowForward } from "react-icons/io";
-import logo_4 from "../assets/assets/logo_4.png";
+import logo from "../assets/assets/logo_pic1.png";
 import { categories } from "../Utils/data";
 
 const isNotActiveStyle =
@@ -22,7 +22,8 @@ function SideBar({ closeToggle, user }) {
           className="flex px-5 gap-2 my-6 pt-1 w-190 items-center"
           onClick={handleCloseSidebar}
         >
-          <img src={logo_4} alt="logo" className="w-full" />
+          <img src={logo} alt="logo" className="w-[50%]" />
+          <h1 className="text-white">My Media</h1>
         </Link>
         <div className="flex flex-col gap-5">
           <NavLink

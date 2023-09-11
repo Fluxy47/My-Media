@@ -120,7 +120,7 @@ function CreatePin({ user }) {
   }, []);
 
   const savePin = () => {
-    if (title && about && destination && imageUrl && category) {
+    if (title && about && imageUrl && category) {
       // Extract the UUID and filename from the imageUrl
       const filename = imageUrl.split("%2F")[1].split("?")[0];
 
@@ -134,7 +134,6 @@ function CreatePin({ user }) {
         pinId,
         title,
         about,
-        destination,
         imageUrl,
         filename,
         uuid, // Add the UUID to the pinData
@@ -148,7 +147,6 @@ function CreatePin({ user }) {
 
       set(newPinRef, pinData)
         .then(() => {
-          cleanupOrphanedImages();
           navigate("/");
         })
         .catch((error) => {
@@ -247,13 +245,6 @@ function CreatePin({ user }) {
             value={about}
             onChange={(e) => setAbout(e.target.value)}
             placeholder="Tell everyone what your Pin is about"
-            className="outline-none text-base sm:text-lg border-b-2 text-white bg-black border-red-800 p-2"
-          />
-          <input
-            type="url"
-            value={destination}
-            onChange={(e) => setDestination(e.target.value)}
-            placeholder="Add a destination link"
             className="outline-none text-base sm:text-lg border-b-2 text-white bg-black border-red-800 p-2"
           />
 
