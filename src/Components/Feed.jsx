@@ -8,11 +8,12 @@ import { AnimatePresence } from "framer-motion";
 
 const Feed = () => {
   const [pins, setPins] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // ✅ Set loading to true initially
   const { categoryId } = useParams();
 
   useEffect(() => {
     const fetchPinsData = async () => {
+      setLoading(true); // ✅ Ensure loading is set to true before fetching
       try {
         const pinsRef = ref(database, "pins/");
         const pinsSnapshot = await get(pinsRef);
@@ -25,32 +26,32 @@ const Feed = () => {
             const filteredPins = pinsArray.filter(
               (pin) => pin.category === categoryId
             );
-
-            setPins(filteredPins); // Set filtered data to state
+            setPins(filteredPins);
           } else {
-            setPins(pinsArray); // Set all data to state if no categoryId
+            setPins(pinsArray);
           }
+        } else {
+          setPins([]); // Handle case when no data exists
         }
-
-        setLoading(false); // Set loading to false after data retrieval
       } catch (error) {
         console.error("Error:", error);
-        setLoading(false); // Make sure to set loading to false even on error
+      } finally {
+        setLoading(false); // ✅ Ensure loading is set to false after fetch
       }
     };
 
     fetchPinsData();
   }, [categoryId]);
 
-  const ideaName = categoryId || "new";
+  const ideaName = categoryId || "";
+
   if (loading) {
-    return (
-      <Spinner message={`We are adding ${ideaName} ideas to your feed!`} />
-    );
+    return <Spinner message={`We are adding ideas to your feed!`} />;
   }
+
   return (
     <AnimatePresence mode="wait">
-      {pins && <MasonryLayout pins={pins} />}
+      <MasonryLayout ideaName={ideaName} pins={pins} isLoading={loading} />
     </AnimatePresence>
   );
 };

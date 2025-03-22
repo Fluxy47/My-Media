@@ -8,15 +8,18 @@ import { AnimatePresence, motion } from "framer-motion";
 import { auth, database, storage } from "../firebaseConfig";
 import { get, push, ref, remove, set, update } from "firebase/database";
 import { deleteObject, ref as storageRef } from "@firebase/storage";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const Pin = ({ pin }) => {
   const [postHovered, setPostHovered] = useState(false);
   const [savingPost, setSavingPost] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const navigate = useNavigate();
   const currentUser = auth.currentUser;
 
-  const { imageUrl, pinId, postedBy } = pin;
+  const { imageUrl, height, width, pinId, postedBy } = pin;
 
   const { userId, userImage, userName } = postedBy;
 
@@ -47,26 +50,20 @@ const Pin = ({ pin }) => {
 
   const savePin = async (pinId) => {
     try {
-      // Get the currently logged-in user
+      setSavingPost(true); // Start showing "Saving"
 
       if (currentUser) {
-        const userRef = ref(database, "users/" + currentUser.uid); // Use the UID of the current user
+        const userRef = ref(database, "users/" + currentUser.uid);
         const userSnapshot = await get(userRef);
 
         if (userSnapshot.exists()) {
           const userData = userSnapshot.val();
           let savedPins = userData.savedPins || [];
 
-          // Check if the pinId is already in the savedPins array
           if (!savedPins.includes(pinId)) {
-            // Add the new pinId to the savedPins array
             savedPins.push(pinId);
 
-            const updates = {
-              savedPins: savedPins,
-            };
-
-            // Update the savedPins array in the user's data
+            const updates = { savedPins };
             await update(userRef, updates);
           }
         } else {
@@ -75,8 +72,11 @@ const Pin = ({ pin }) => {
       } else {
         console.log("No user is currently logged in");
       }
+
+      setSavingPost(false); // Stop showing "Saving" after completion
     } catch (error) {
       console.error("Error:", error);
+      setSavingPost(false); // Ensure it resets on error
     }
   };
 
@@ -116,19 +116,44 @@ const Pin = ({ pin }) => {
         onClick={() => navigate(`/pin-detail/${pinId}`)}
         className=" relative cursor-pointer w-auto hover:shadow-lg rounded-lg overflow-hidden transition-all duration-500 ease-in-out border-[1px] border-solid border-red-400 "
       >
-        <AnimatePresence mode="wait">
-          {imageUrl && (
-            <motion.img
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1 }}
-              className="rounded-lg w-full "
-              src={imageUrl}
-              alt="user-post"
+        {!imageLoaded && (
+          <div
+            exit={{ opacity: 0 }}
+            className="rounded-lg w-full relative overflow-hidden"
+            style={{
+              width: width,
+              paddingTop: `${(height / width) * 93}%`, // Maintain aspect ratio
+            }}
+          >
+            <Skeleton
+              height="100%"
+              width="100%"
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                borderRadius: "8px",
+              }}
+              baseColor="#e0e0e0"
+              highlightColor="#f5f5f5"
+              duration={1.5} // Slower shimmer for a subtle effect
+              containerClassName="animate-fadeIn" // Custom fade-in animation
             />
-          )}
-        </AnimatePresence>
+          </div>
+        )}
+
+        {imageUrl && (
+          <motion.img
+            initial={{ opacity: 0 }}
+            animate={{ opacity: imageLoaded ? 1 : 0 }}
+            exit={{ opacity: 0 }}
+            className="rounded-lg w-full"
+            src={imageUrl}
+            onLoad={() => setImageLoaded(true)}
+            alt="user-post"
+          />
+        )}
+
         {postHovered && (
           <div
             className="absolute top-0 w-full h-full flex flex-col justify-between p-1 pr-2 pt-2 pb-2 z-50"
@@ -140,7 +165,7 @@ const Pin = ({ pin }) => {
                   type="button"
                   className="bg-red-500 opacity-70 hover:opacity-100 text-white font-bold px-5 py-1 text-base rounded-3xl hover:shadow-md outline-none"
                 >
-                  {isPinSaved ? ` Saved` : ` Save`}
+                  Saved
                 </button>
               ) : (
                 <button
@@ -151,7 +176,7 @@ const Pin = ({ pin }) => {
                   type="button"
                   className="bg-red-500 opacity-70 hover:opacity-100 text-white font-bold px-5 py-1 text-base rounded-3xl hover:shadow-md outline-none"
                 >
-                  {pin?.save?.length} {savingPost ? "Saving" : "Save"}
+                  {savingPost ? "Saving..." : "Save"}
                 </button>
               )}
             </div>

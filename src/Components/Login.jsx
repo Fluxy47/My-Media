@@ -14,6 +14,7 @@ function Login() {
 
   const handleClick = async () => {
     try {
+      setError(null); // Reset error before attempting login
       const result = await signInWithPopup(auth, provider);
       const { displayName, uid, photoURL } = result.user;
 
@@ -21,36 +22,30 @@ function Login() {
       const userSnapshot = await get(userRef);
 
       if (!userSnapshot.exists()) {
-        // If the user doesn't exist, create a new entry
-        await set(userRef, {
-          displayName,
-          photoURL,
-          uid,
-        });
+        await set(userRef, { displayName, photoURL, uid });
       }
       navigate("/", { replace: true });
     } catch (error) {
-      setError(error.message);
+      setError(error.message); // Capture and display the error
     }
   };
 
   return (
     <div className="flex justify-start items-center flex-col h-screen overflow-hidden">
-      <div className=" relative w-full h-full">
+      <div className="relative w-full h-full">
         <video
           src={shareVideo}
           type="video/mp4"
           loop
-          controls={false}
           muted
           autoPlay
-          className="w-full h-full  object-cover"
+          className="w-full h-full object-cover"
         />
 
-        <div className="absolute flex flex-col justify-center items-center top-0 right-0 left-0 bottom-0    bg-blackOverlay">
+        <div className="absolute flex flex-col justify-center items-center top-0 right-0 left-0 bottom-0 bg-blackOverlay">
           <div className="p-5 gap-1 flex justify-center items-center">
             <img src={logo} width="90px" alt="logo" />
-            <h1 className="text-xl">My Media</h1>
+            <h1 className="text-xl text-white">My Media</h1>
           </div>
 
           <div className="shadow-2xl">
@@ -58,6 +53,17 @@ function Login() {
               Sign in / Log in
             </button>
           </div>
+
+          {/* Error message display */}
+          {error && (
+            <div
+              className="mt-4 p-3 text-red-600 rounded-lg shadow-lg"
+              role="alert"
+              aria-live="assertive"
+            >
+              {error}
+            </div>
+          )}
         </div>
       </div>
     </div>

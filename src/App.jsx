@@ -1,39 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
-import { Suspense } from "react";
+import React from "react";
+import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./Utils/ProtectedRoute";
-import Spinner from "./Components/Spinner";
-import { auth } from "./firebaseConfig";
-
-const Login = React.lazy(() => import("./Components/Login"));
-const Home = React.lazy(() => import("./Containers/Home"));
+import { AuthProvider } from "./Utils/AuthContext";
+import Login from "./Components/Login";
+import Home from "./Containers/Home";
 
 function App() {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        // User is signed in
-        setUser(user);
-      } else {
-        // User is signed out
-        setUser(null);
-      }
-    });
-
-    return () => unsubscribe(); // Unsubscribe when the component unmounts
-  }, []);
-
   return (
-    <Suspense fallback={<Spinner />}>
+    <AuthProvider>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route element={<ProtectedRoute user={user} />}>
-          <Route path="*" element={<Home user={user} />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="*" element={<Home />} />
         </Route>
       </Routes>
-    </Suspense>
+    </AuthProvider>
   );
 }
 

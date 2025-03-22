@@ -23,11 +23,38 @@ function CreatePin({ user }) {
   const [loading, setLoading] = useState(false);
   const [fields, setFields] = useState(false);
   const [category, setCategory] = useState(null);
-  const [imageUrl, setImageUrl] = useState(null); // Add imageUrl state
+  const [imageData, setImageData] = useState({
+    imageUrl: null,
+    width: null,
+    height: null,
+  });
+  console.log("imagedata", imageData);
+
+  const { imageUrl, width, height } = imageData;
+  console.log("url", imageUrl);
+  console.log("height", height);
+  console.log("width", width);
 
   const [wrongImageType, setWrongImageType] = useState(false);
 
   const navigate = useNavigate();
+
+  const getImageDimensions = (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          resolve({
+            width: img.naturalWidth,
+            height: img.naturalHeight,
+          });
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
 
   const uploadImage = async (e) => {
     const selectedFile = e.target.files[0];
@@ -40,9 +67,17 @@ function CreatePin({ user }) {
 
       try {
         setLoading(true);
+        const dimensions = await getImageDimensions(selectedFile);
+
         await uploadBytes(storageRef, selectedFile);
-        const url = await getDownloadURL(storageRef);
-        setImageUrl(url);
+        const imageUrl = await getDownloadURL(storageRef);
+        // setImageUrl(url);
+        // setImageDimensions(dimensions);
+        setImageData({
+          imageUrl,
+          width: dimensions.width,
+          height: dimensions.height,
+        });
 
         setLoading(false);
         setWrongImageType(false);
@@ -135,6 +170,8 @@ function CreatePin({ user }) {
         title,
         about,
         imageUrl,
+        width,
+        height,
         filename,
         uuid, // Add the UUID to the pinData
         postedBy: {
@@ -210,7 +247,13 @@ function CreatePin({ user }) {
                 <button
                   type="button"
                   className="absolute bottom-3 right-3 p-3 rounded-full bg-black text-xl cursor-pointer outline-none hover:shadow-md transition-all duration-500 ease-in-out"
-                  onClick={() => setImageUrl(null)}
+                  onClick={() =>
+                    setImageData({
+                      imageUrl: null,
+                      width: null,
+                      height: null,
+                    })
+                  }
                 >
                   <MdDelete />
                 </button>
@@ -257,7 +300,7 @@ function CreatePin({ user }) {
                 onChange={(e) => {
                   setCategory(e.target.value);
                 }}
-                className="outline-none w-4/5 text-base border-b-2 bg-black border-red-800 text-white p-2 rounded-md cursor-pointer"
+                className="border-2 outline-none w-full text-base border-b-2 bg-black border-red-800 text-white p-2 rounded-md cursor-pointer"
               >
                 <option value="others" className="sm:text-bg bg-black">
                   Select Category

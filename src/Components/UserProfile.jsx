@@ -15,16 +15,50 @@ import {
   onValue,
 } from "firebase/database";
 import { signOut } from "firebase/auth";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const activeBtnStyles =
   "bg-red-500 text-white font-bold p-2 rounded-full w-20 outline-none";
 const notActiveBtnStyles =
-  "bg-primary mr-4 bg-white text-black font-bold p-2 rounded-full w-20 outline-none";
+  "bg-primary bg-white text-black font-bold p-2 rounded-full w-20 outline-none";
 
 const UserProfile = ({ toggleSidebar, sideBarFunction }) => {
   const [user, setUser] = useState();
   const [pins, setPins] = useState([]);
   const [text, setText] = useState("Created");
+  const [imageUrl, setImageUrl] = useState(
+    sessionStorage.getItem("unsplashImage") || ""
+  );
+
+  const [loading, setLoading] = useState(!imageUrl);
+
+  const ApiKey = import.meta.env.VITE_API_UNSPLASH_API_KEY;
+
+  useEffect(() => {
+    if (!imageUrl) {
+      fetch(`https://api.unsplash.com/photos/random?client_id=${ApiKey}`)
+        .then((response) => response.json())
+        .then((data) => {
+          const newImageUrl = data.urls.full;
+
+          // Preload Image
+          const img = new Image();
+          img.src = newImageUrl;
+          img.onload = () => {
+            setImageUrl(newImageUrl);
+            setLoading(false);
+            sessionStorage.setItem("unsplashImage", newImageUrl);
+          };
+        })
+        .catch((error) => {
+          console.error("Error fetching image:", error);
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
+    }
+  }, []);
 
   const [activeBtn, setActiveBtn] = useState("created");
   const navigate = useNavigate();
@@ -127,36 +161,9 @@ const UserProfile = ({ toggleSidebar, sideBarFunction }) => {
   return (
     <div className="relative pb-2 h-full justify-center items-center">
       <div className="flex flex-col pb-5">
-        <div className="relative flex flex-col mb-7">
-          <div className="flex flex-col justify-center items-center">
-            <motion.img
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1 }}
-              className=" w-full h-[80vh] 2xl:h-510 shadow-lg object-cover"
-              src="https://source.unsplash.com/1600x900/?nature,photography,technology"
-              alt="user-pic"
-            />
-            <img
-              className="rounded-full w-20 h-20 -mt-10 shadow-xl object-cover"
-              src={user.photoURL}
-              alt="user-pic"
-            />
-          </div>
-          <h1 className="font-bold text-3xl text-center mt-3 text-white">
-            {user.displayName}
-          </h1>
-          <div className="fixed md:top-0 z-10 right-0 pr-5 bg-transparent ">
-            <button
-              className=" bg-white p-2 rounded-full cursor-pointer outline-none shadow-md"
-              onClick={handleLogout}
-              type="button"
-            >
-              <AiOutlineLogout className="bg-white" color="red" fontSize={21} />
-            </button>
-          </div>
+        <section className="flex fixed top-5 z-10 w-full items-center justify-between">
           <motion.div
-            className="fixed top-0 left-0 p-2 z-1 bg-transparent"
+            className="bg-transparent pl-2"
             initial={{ marginLeft: 0 }}
             animate={{ marginLeft: toggleSidebar ? 200 : 0 }}
             transition={{ duration: 0.7 }}
@@ -168,8 +175,60 @@ const UserProfile = ({ toggleSidebar, sideBarFunction }) => {
               <FiMenu className="bg-transparent" color="red" fontSize={30} />
             </button>
           </motion.div>
+
+          <div className="pr-7 bg-transparent hidden md:block">
+            <button
+              className=" bg-white p-2 rounded-full cursor-pointer outline-none shadow-md"
+              onClick={handleLogout}
+              type="button"
+            >
+              <AiOutlineLogout className="bg-white" color="red" fontSize={20} />
+            </button>
+          </div>
+        </section>
+
+        <div className="fixed  md:top-[10%] right-2 z-10 bg-transparent md:hidden">
+          <button
+            className=" bg-white p-2 rounded-full cursor-pointer outline-none shadow-md"
+            onClick={handleLogout}
+            type="button"
+          >
+            <AiOutlineLogout className="bg-white" color="red" fontSize={20} />
+          </button>
         </div>
-        <div className="text-center mb-7">
+        <div className="relative flex flex-col mb-7 ">
+          <div className="flex  flex-col justify-center items-center">
+            <div className="w-full h-[80vh] 2xl:h-[510px] relative">
+              {loading ? (
+                <Skeleton
+                  className="absolute top-0 left-0 w-full h-full rounded-lg"
+                  baseColor="#e0e0e0" // Light gray for a smooth look
+                  highlightColor="#f5f5f5" // Slightly brighter shimmer
+                  duration={1.5} // Slower shimmer for a subtle effect
+                  containerClassName="animate-fadeIn" // Custom fade-in animation
+                />
+              ) : (
+                <motion.img
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="w-full h-full shadow-lg object-cover rounded-b-lg"
+                  src={imageUrl}
+                  alt="Random Unsplash"
+                />
+              )}
+            </div>
+            <img
+              className="rounded-full w-20 h-20 z-[1] -mt-10 shadow-xl object-cover"
+              src={user.photoURL}
+              alt="user-pic"
+            />
+
+            <h1 className="font-bold text-3xl mt-3 text-white">
+              {user.displayName}
+            </h1>
+          </div>
+        </div>
+        <div className="flex gap-2 w-full justify-center items-center mb-7 ">
           <button
             type="button"
             onClick={(e) => {
@@ -205,12 +264,6 @@ const UserProfile = ({ toggleSidebar, sideBarFunction }) => {
         {activeBtn === "created" && (
           <div className="px-2">
             <MasonryLayout pins={pins} />
-          </div>
-        )}
-
-        {pins?.length === 0 && (
-          <div className="flex justify-center font-bold items-center w-full text-1xl mt-2">
-            No Pins Found!
           </div>
         )}
       </div>

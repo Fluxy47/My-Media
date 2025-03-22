@@ -5,13 +5,17 @@ import { AiFillCloseCircle } from "react-icons/ai";
 import { Link, Routes, Route } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import logo from "../assets/assets/logo_pic1.png";
+import { useAuth } from "../Utils/AuthContext";
+import SideBar from "../Components/SideBar";
+import UserProfile from "../Components/UserProfile";
+import Pins from "./Pins";
+import { useMediaQuery } from "@uidotdev/usehooks";
 
-const SideBar = React.lazy(() => import("../Components/SideBar"));
-const UserProfile = React.lazy(() => import("../Components/UserProfile"));
-const Pins = React.lazy(() => import("./Pins"));
-
-function Home({ user }) {
+function Home() {
   const [toggleSidebar, setToggleSidebar] = useState(false);
+  const isMediumOrLarger = useMediaQuery("only screen and (min-width: 768px)");
+
+  const { user } = useAuth(); // Get user from context
 
   const scrollRef = useRef(null);
 
@@ -67,7 +71,13 @@ function Home({ user }) {
         </div>
         <AnimatePresence mode="wait">
           {toggleSidebar && (
-            <div className="fixed w-4/5 bg-white h-screen overflow-y-auto shadow-md z-10 ">
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="fixed w-4/5 bg-white h-screen overflow-y-auto shadow-md z-10 "
+            >
               <div className="absolute w-full flex justify-end items-center p-2">
                 <AiFillCloseCircle
                   fontSize={30}
@@ -76,7 +86,7 @@ function Home({ user }) {
                 />
               </div>
               <SideBar closeToggle={setToggleSidebar} user={user && user} />
-            </div>
+            </motion.div>
           )}
         </AnimatePresence>
       </div>
@@ -95,12 +105,16 @@ function Home({ user }) {
             path="*"
             element={
               <motion.div
-                initial={{ marginLeft: 0 }}
-                animate={{ marginLeft: toggleSidebar ? 200 : 0 }}
-                transition={{ duration: 0.9 }}
+                initial={isMediumOrLarger ? { marginLeft: 0 } : {}}
+                animate={
+                  isMediumOrLarger
+                    ? { marginLeft: toggleSidebar ? 200 : 0 }
+                    : {}
+                }
+                transition={isMediumOrLarger ? { duration: 0.9 } : {}}
               >
                 <Pins
-                  user={user && user}
+                  user={user}
                   sideBarFunction={sideBarFunction}
                   toggleSidebar={toggleSidebar}
                 />
